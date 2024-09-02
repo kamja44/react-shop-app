@@ -5,6 +5,7 @@ import LogoPath from "@/assets/colorful.svg";
 import { useRouter } from "next/navigation";
 import styles from "./Auth.module.scss";
 import Loader from "@/components/loader/Loader";
+import Input from "@/components/input/Input";
 
 const LoginClient = () => {
   const [email, setEmail] = useState("");
@@ -34,7 +35,28 @@ const LoginClient = () => {
             <Image src={LogoPath} alt="logo" />
           </h1>
           <form className={styles.form} onSubmit={loginUser}>
-            {/*Input */}Input
+            <Input
+              email
+              icon="letter"
+              id="email"
+              name="email"
+              label="이메일"
+              placeholder="ID(e-mail)"
+              className={styles.control}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+            <Input
+              password
+              icon="lock"
+              id="password"
+              name="password"
+              label="비밀번호"
+              placeholder="비밀번호"
+              className={styles.control}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
             <div className={styles.group}>
               {/* 자동 로그인, 비밀번호 수정 */}자동 로그인, 비밀번호 수정{" "}
             </div>

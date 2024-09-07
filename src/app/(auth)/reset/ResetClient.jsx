@@ -37,7 +37,7 @@ const ResetClient = () => {
               <div>
                 <Button type="submit">업데이트</Button>
               </div>
-              <div className={styles.link}>
+              <div className={styles.links}>
                 <p>
                   <Link href="/login">-로그인</Link>
                 </p>

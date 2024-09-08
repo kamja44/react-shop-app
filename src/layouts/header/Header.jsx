@@ -7,9 +7,12 @@ import { toast } from "react-toastify";
 import { auth } from "@/firebase/firebase";
 import { usePathname } from "next/navigation";
 import InnerHeader from "../innerHeader/InnerHeader";
+import { useDispatch } from "react-redux";
+import { REMOVE_ACTIVE_USER, SET_ACTIVE_USER } from "@/redux/slice/authSlice";
 
 const Header = () => {
   const pathname = usePathname();
+  const dispatch = useDispatch();
   const [displayName, setDisplayName] = useState("");
 
   useEffect(() => {
@@ -25,12 +28,26 @@ const Header = () => {
         }
 
         // 유저 정보를 리덕스 스토어에 저장하기
+        dispatch(
+          SET_ACTIVE_USER({
+            email: user.email,
+            userName: user.displayName ? user.userName : displayName,
+            userId: user.uid,
+          })
+        );
       } else {
         setDisplayName("");
         // 유저 정보 리덕스 스토어에서 파기
+        dispatch(
+          REMOVE_ACTIVE_USER({
+            email: null,
+            userName: null,
+            userId: null,
+          })
+        );
       }
     });
-  }, []);
+  }, [dispatch, displayName]);
 
   const logoutUser = (event) => {
     signOut(auth)

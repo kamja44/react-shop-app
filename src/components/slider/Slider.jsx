@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import sliderData from "./SliderData";
 import styles from "./Slider.module.scss";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
-import { current } from "@reduxjs/toolkit";
 import Image from "next/image";
 
 const Slider = () => {
@@ -49,7 +48,7 @@ const Slider = () => {
                 : `${styles.slide}`
             }
           >
-            {index === current ? (
+            {index === currentSlide ? (
               <Image src={image} alt={heading} fill />
             ) : null}
           </div>

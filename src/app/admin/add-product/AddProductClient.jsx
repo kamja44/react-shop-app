@@ -5,6 +5,10 @@ import React, { useState } from "react";
 import styles from "./AddProduct.module.scss";
 import Heading from "@/components/heading/Heading";
 import Button from "@/components/button/Button";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { db, storage } from "@/firebase/firebase";
+import { toast } from "react-toastify";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 
 export const categories = [
   { id: 1, name: "Laptop" },
@@ -42,10 +46,59 @@ const AddProductClient = () => {
     setProduct({ ...product, [name]: value });
   };
 
-  const handleImageChange = (event) => {};
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    console.log(event.target);
+
+    const storageRef = ref(storage, `images/${Date.now()}${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploadProgress(progress);
+      },
+      (error) => {
+        toast.error(error.message);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setProduct({
+            ...product,
+            imageURL: downloadURL,
+          });
+          toast.success("이미지를 성공적으로 업로드했습니다.");
+        });
+      }
+    );
+  };
 
   const addProduct = (event) => {
     event.preventDefault();
+    setIsLoading(true);
+    try {
+      addDoc(collection(db, "products"), {
+        name: product.name,
+        imageURL: product.imageURL,
+        price: product.price,
+        category: product.category,
+        brand: product.brand,
+        desc: product.desc,
+        createdAt: Timestamp.now().toDate(),
+      });
+      setIsLoading(false);
+      setUploadProgress(0);
+      setProduct({
+        ...initialState,
+      });
+      toast.success("상품을 저장했습니다.");
+      router.push("/admin/all-products");
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(error.message);
+    }
   };
   return (
     <>
@@ -67,7 +120,7 @@ const AddProductClient = () => {
               <div className={styles.progress}>
                 <div
                   className={styles["progress-bar"]}
-                  styles={{ width: `${uploadProgress}` }}
+                  style={{ width: `${uploadProgress}` }}
                 >
                   {uploadProgress < 100
                     ? `Uploading... ${uploadProgress}`
@@ -108,7 +161,7 @@ const AddProductClient = () => {
             required
             name="category"
             value={product.category}
-            onChange={(event) => handleImageChange(event)}
+            onChange={(event) => handleInputChange(event)}
           >
             <option value="" disabled>
               --상품 카테고리 선택:
@@ -127,7 +180,7 @@ const AddProductClient = () => {
             placeholder="상품 브랜드/회사"
             name="brand"
             value={product.brand}
-            onChange={(event) => handleImageChange(event)}
+            onChange={(event) => handleInputChange(event)}
           />
           <label>상품 설명:</label>
           <textarea
@@ -136,7 +189,7 @@ const AddProductClient = () => {
             cols={10}
             rows={10}
             required
-            onChange={(event) => handleImageChange(event)}
+            onChange={(event) => handleInputChange(event)}
           ></textarea>
           <Button type="submit">상품 생성</Button>
         </form>

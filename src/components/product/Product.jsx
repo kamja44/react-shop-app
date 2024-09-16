@@ -38,8 +38,9 @@ const Product = () => {
       <aside className={styles.filter}>
         {isLoading ? null : <ProductFilter />}
       </aside>
-      <div className={styles.content}></div>
-      {isLoading ? <Loader basic /> : <ProductList />}
+      <div className={styles.content}>
+        {isLoading ? <Loader basic /> : <ProductList />}
+      </div>
     </section>
   );
 };

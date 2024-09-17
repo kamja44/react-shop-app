@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import styles from "./Pagination.module.scss";
 
 const Pagination = ({
   currentPage,
@@ -35,14 +36,46 @@ const Pagination = ({
   };
 
   for (
-    let index = 0;
+    let index = 1;
     index < Math.ceil(totalProducts / productsPerPage);
     index++
   ) {
     pageNumbers.push(index);
   }
 
-  return <div>Pagination</div>;
+  return (
+    <div className={styles.pagination}>
+      <li
+        onClick={paginatePrevPage}
+        className={currentPage === pageNumbers[0] ? `${styles.hidden}` : ""}
+      >
+        {"<"}
+      </li>
+      {pageNumbers.map((number) => {
+        if (number < maxPageNumberLimit + 1 && number > minPageNumberLimit) {
+          return (
+            <li
+              key={number}
+              onClick={() => paginate(number)}
+              className={currentPage === number ? `${styles.active}` : ``}
+            >
+              {number}
+            </li>
+          );
+        }
+      })}
+      <li
+        onClick={paginateNextPage}
+        className={
+          currentPage === pageNumbers[pageNumbers.length - 1]
+            ? `${styles.hidden}`
+            : ``
+        }
+      >
+        {">"}
+      </li>
+    </div>
+  );
 };
 
 export default Pagination;
